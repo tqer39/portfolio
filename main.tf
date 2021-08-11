@@ -6,7 +6,7 @@ terraform {
       version = "~> 3"
     }
   }
-  
+
   backend "remote" {
     organization = "tqer39"
 
