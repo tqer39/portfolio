@@ -31,7 +31,7 @@ locals {
   }
 }
 
-resource "aws_vpc" "portfolio" {
+resource "aws_vpc" "portfolio-vpc" {
   cidr_block           = var.address_space
   enable_dns_hostnames = true
 
