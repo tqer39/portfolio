@@ -37,7 +37,7 @@ resource "aws_vpc" "portfolio" {
 
   tags = merge(local.common_tags,
     {
-      Name = "${var.prefix}-vpc"
+      Name = "${var.prefix}"
     }
   )
 }
