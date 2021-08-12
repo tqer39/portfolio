@@ -43,7 +43,7 @@ module "portfolio_vpc" {
 
 resource "aws_subnet" "portfolio_autoscaling_private_1" {
   vpc_id                  = module.portfolio_vpc.id
-  cidr_block              = cidrsubnet(module.vpc.cidr_block, 8, 0)
+  cidr_block              = cidrsubnet(module.portfolio_vpc.cidr_block, 8, 0)
   availability_zone       = var.availability_zones[0]
   map_public_ip_on_launch = true
 
