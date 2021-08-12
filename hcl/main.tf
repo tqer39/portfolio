@@ -55,3 +55,17 @@ resource "aws_subnet" "portfolio_autoscaling_private_1" {
     }
   )
 }
+
+resource "aws_subnet" "portfolio_autoscaling_private_2" {
+  vpc_id                  = aws_vpc.portfolio.id
+  cidr_block              = cidrsubnet(aws_vpc.portfolio.cidr_block, 8, 1)
+  availability_zone       = var.availability_zones[1]
+  map_public_ip_on_launch = true
+
+  tags = merge(local.common_tags,
+    {
+      Name = "${var.prefix}_autoscaling_private_2"
+      Type = "private"
+    }
+  )
+}
