@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - future
-    paths:
-      - hcl/**
+    # paths:
+    #   - hcl/**
   pull_request:
 
 jobs:
