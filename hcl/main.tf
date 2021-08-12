@@ -31,15 +31,13 @@ locals {
   }
 }
 
-resource "aws_vpc" "portfolio" {
-  cidr_block           = var.address_space
-  enable_dns_hostnames = true
-
-  tags = merge(local.common_tags,
-    {
-      Name = "${var.prefix}"
-    }
-  )
+module "vpc_portfolio" {
+  source     = "./modules/vpc"
+  cidr_block = var.address_space
+  name       = var.prefix
+  tags = {
+    Name = "${var.prefix}"
+  }
 }
 
 resource "aws_subnet" "portfolio_autoscaling_private_1" {
