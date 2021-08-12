@@ -1,3 +1,3 @@
 output "id" {
-  value = module.portfolio.id
+  value = aws_vpc.portfolio.id
 }
