@@ -1,3 +1,3 @@
-output "portfolio_vpc_id" {
+output "id" {
   value = module.portfolio.id
 }
