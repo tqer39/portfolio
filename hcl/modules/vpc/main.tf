@@ -13,9 +13,8 @@ locals {
   }
 }
 
-resource "aws_vpc" "this" {
+resource "aws_vpc" "portfolio" {
   cidr_block           = var.cidr_block
-  instance_tenancy     = "default"
   enable_dns_hostnames = true
   tags                 = merge(local.common_tags, var.tags)
 }
