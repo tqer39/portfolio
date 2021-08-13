@@ -41,6 +41,11 @@ jobs:
         working-directory: './hcl'
         run: terraform validate -no-color
 
+      - name: Terraform Get
+        id: get
+        working-directory: './hcl'
+        run: terraform get -no-color
+
       - name: Terraform Plan
         id: plan
         working-directory: './hcl'
