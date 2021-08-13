@@ -44,6 +44,7 @@ jobs:
       - name: Terraform Plan
         id: plan
         working-directory: './hcl'
+        shell: bash
         # if: github.event_name == 'pull_request'
         if: github.event_name == 'push'
         run: terraform plan -no-color
