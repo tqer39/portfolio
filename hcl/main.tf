@@ -8,6 +8,7 @@ terraform {
   }
 
   backend "remote" {
+    hostname     = "app.terraform.io"
     organization = "tqer39"
 
     workspaces {
@@ -31,7 +32,7 @@ locals {
   }
 }
 
-module "portfolio_vpc" {
+module "vpc_portfolio" {
   source     = "./modules/vpc"
   cidr_block = var.address_space
   name       = var.prefix
@@ -42,8 +43,8 @@ module "portfolio_vpc" {
 }
 
 resource "aws_subnet" "portfolio_autoscaling_private_1" {
-  vpc_id                  = module.portfolio_vpc.id
-  cidr_block              = cidrsubnet(module.portfolio_vpc.cidr_block, 8, 0)
+  vpc_id                  = module.vpc_portfolio.id
+  cidr_block              = cidrsubnet(module.vpc_portfolio.cidr_block, 8, 0)
   availability_zone       = var.availability_zones[0]
   map_public_ip_on_launch = true
 
@@ -56,8 +57,8 @@ resource "aws_subnet" "portfolio_autoscaling_private_1" {
 }
 
 resource "aws_subnet" "portfolio_autoscaling_private_2" {
-  vpc_id                  = module.portfolio_vpc.id
-  cidr_block              = cidrsubnet(module.portfolio_vpc.cidr_block, 8, 1)
+  vpc_id                  = module.vpc_portfolio.id
+  cidr_block              = cidrsubnet(module.vpc_portfolio.cidr_block, 8, 1)
   availability_zone       = var.availability_zones[1]
   map_public_ip_on_launch = true
 
