@@ -22,9 +22,9 @@ jobs:
           # terraform_version: 0.13.0:
           cli_config_credentials_token: ${{ secrets.TF_PORTFOLIO_API_TOKEN }}
 
-      - name: Delete Lock File
-        id: remove
-        run: rm -rf .terraform.lock.hcl
+      # - name: Delete Lock File
+      #   id: remove
+      #   run: rm -rf .terraform.lock.hcl
 
       - name: Terraform Format
         id: fmt
