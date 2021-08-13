@@ -23,7 +23,7 @@ jobs:
           cli_config_credentials_token: ${{ secrets.TF_PORTFOLIO_API_TOKEN }}
 
       - name: Delete Lock File
-        id: remove file
+        id: remove
         run: rm -rf .terraform.lock.hcl
 
       - name: Terraform Format
