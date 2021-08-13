@@ -28,7 +28,7 @@ jobs:
 
       - name: Terraform Init
         id: init
-        run: terraform -chdir=./hcl init -migrate-state 
+        run: terraform -chdir=./hcl init -migrate-state -force-copy
 
       - name: Terraform Validate
         id: validate
