@@ -1,2 +1,5 @@
 .gitignore
-README.md
+**/README.md
+typescript/**
+docker-compose.yml
+**/Dockerfile
