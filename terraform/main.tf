@@ -45,3 +45,25 @@ resource "aws_s3_bucket" "spa" {
     Name = "${var.prefix}"
   })
 }
+
+data "bucket_policy_document" "spa_policy" {
+  statement {
+    sid    = "spa"
+    effect = "Allow"
+    actions = [
+      "s3:GetObject"
+    ]
+    resources = [
+      "arn:aws:s3:::${aws_s3_bucket.spa.id}/*"
+    ]
+    principals {
+      type        = "AWS"
+      identifiers = ["582318560864"] // 東京リージョンはこの AWS Account ID を指定
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "spa" {
+  bucket = aws_s3_bucket.spa.id
+  policy = data.bucket_policy_document.spa_policy.json
+}
