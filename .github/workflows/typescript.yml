@@ -19,11 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        if: "steps.check.outputs.branch"
         uses: actions/checkout@v2
 
       - name: Setup node
-        if: "steps.check.outputs.branch"
         uses: actions/setup-node@v1
         with:
           node-version: "14.x"
@@ -67,9 +65,9 @@ jobs:
         working-directory: "./typescript"
         run: yarn build # React ビルド
 
-      - name: Export
-        working-directory: "./typescript"
-        run: npx next export
+      # - name: Export
+      #   working-directory: "./typescript"
+      #   run: npx next export
 
       - name: Deploy # S3にデプロイ
         working-directory: "./typescript"
