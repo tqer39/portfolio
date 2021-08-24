@@ -43,6 +43,35 @@ resource "aws_iam_access_key" "deploy" {
   pgp_key = var.pgp_key
 }
 
+resource "aws_iam_policy" "deploy" {
+  name        = "deploy"
+  path        = "/"
+  description = "S3 に対してデプロイする"
+  policy      = ""
+}
+
+resource "aws_iam_group" "deploy" {
+  name = "deploy"
+  path = "/"
+}
+
+resource "aws_iam_group_policy_attachment" "deploy" {
+  group      = aws_iam_group.deploy.name
+  policy_arn = aws_iam_policy.deploy.arn
+}
+
+resource "aws_iam_role" "deploy" {
+  name                  = "deploy"
+  path                  = "/"
+  force_detach_policies = true
+  max_session_duration  = 43200
+}
+
+resource "aws_iam_group_policy_attachment" "deploy" {
+  group      = aws_iam_group.deploy.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+
 resource "aws_s3_bucket" "spa" {
   bucket        = "spa-373303485727"
   acl           = "public-read" # see: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket#static-website-hosting
