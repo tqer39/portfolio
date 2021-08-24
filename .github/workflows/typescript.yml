@@ -51,6 +51,11 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
           restore-keys: ${{ runner.os }}-yarn-
 
+      - name: Install dependencies
+        id: install_dependencies
+        working-directory: "./typescript"
+        run: yarn install --frozen-lockfile --prefer-offline
+
       - name: Build
         working-directory: "./typescript"
         run: yarn build # React ビルド
