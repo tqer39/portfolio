@@ -53,6 +53,14 @@ resource "aws_iam_group_policy_attachment" "deploy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
 
+resource "aws_iam_group_membership" "deploy" {
+  name = "deploy"
+  users = [
+    aws_iam_user.deploy.name,
+  ]
+  group = aws_iam_group.deploy.name
+}
+
 resource "aws_s3_bucket" "spa" {
   bucket        = "spa-373303485727"
   acl           = "public-read" # see: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket#static-website-hosting
