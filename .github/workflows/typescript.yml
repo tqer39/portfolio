@@ -27,11 +27,11 @@ jobs:
           restore-keys: ${{ runner.os }}-yarn-
 
       - name: Install dependencies
-        id: install dependencies
+        id: install_dependencies
         working-directory: "./typescript"
         run: yarn install --frozen-lockfile --prefer-offline
 
       - name: Check diff
-        id: check diff
+        id: check_diff
         working-directory: "./typescript"
         run: git diff --exit-code
