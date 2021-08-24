@@ -34,6 +34,7 @@ locals {
 
 resource "aws_s3_bucket" "spa" {
   bucket        = "spa-373303485727"
+  acl           = "private"
   force_destroy = true
 
   lifecycle_rule {
