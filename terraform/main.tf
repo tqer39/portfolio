@@ -34,7 +34,7 @@ locals {
 
 resource "aws_s3_bucket" "spa" {
   bucket        = "spa-373303485727"
-  acl           = "private"
+  acl           = "public-read" # see: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket#static-website-hosting
   force_destroy = true
 
   lifecycle_rule {
