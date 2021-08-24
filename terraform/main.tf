@@ -62,6 +62,7 @@ EOF
   })
 }
 
+# see: https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/HostingWebsiteOnS3Setup.html#step3-add-bucket-policy-make-content-public
 resource "aws_s3_bucket_policy" "spa" {
   bucket = aws_s3_bucket.spa.id
   policy = jsonencode({
