@@ -32,6 +32,17 @@ locals {
   }
 }
 
+resource "aws_iam_user" "deploy" {
+  name          = "deploy"
+  path          = "/"
+  force_destroy = true
+}
+
+resource "aws_iam_access_key" "deploy" {
+  user    = aws_iam_user.deploy.name
+  pgp_key = var.pgp_key
+}
+
 resource "aws_s3_bucket" "spa" {
   bucket        = "spa-373303485727"
   acl           = "public-read" # see: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket#static-website-hosting
