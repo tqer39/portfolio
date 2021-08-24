@@ -18,11 +18,18 @@ jobs:
   format:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - name: Checkout
+        if: "steps.check.outputs.branch"
+        uses: actions/checkout@v2
+
+      - name: Setup node
+        if: "steps.check.outputs.branch"
+        uses: actions/setup-node@v1
         with:
-          node-version: 14.x
-      - uses: actions/cache@v2
+          node-version: "14.x"
+
+      - name: Setup cache
+        uses: actions/cache@v2
         with:
           path: ~/.cache/yarn
           key: ${{ runner.os }}-yarn-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
