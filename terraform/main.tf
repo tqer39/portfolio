@@ -43,13 +43,6 @@ resource "aws_iam_access_key" "deploy" {
   pgp_key = var.pgp_key
 }
 
-resource "aws_iam_policy" "deploy" {
-  name        = "deploy"
-  path        = "/"
-  description = "S3 に対してデプロイする"
-  policy      = ""
-}
-
 resource "aws_iam_group" "deploy" {
   name = "deploy"
   path = "/"
