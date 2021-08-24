@@ -57,18 +57,6 @@ resource "aws_iam_group" "deploy" {
 
 resource "aws_iam_group_policy_attachment" "deploy" {
   group      = aws_iam_group.deploy.name
-  policy_arn = aws_iam_policy.deploy.arn
-}
-
-resource "aws_iam_role" "deploy" {
-  name                  = "deploy"
-  path                  = "/"
-  force_detach_policies = true
-  max_session_duration  = 43200
-}
-
-resource "aws_iam_group_policy_attachment" "deploy" {
-  group      = aws_iam_group.deploy.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
 
