@@ -37,3 +37,31 @@ jobs:
         id: check_diff
         working-directory: "./typescript"
         run: git diff --exit-code
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@future  # リポジトリをチェックアウト
+
+      - name: Install Dependencies
+        working-directory: "./typescript"
+        run: yarn install --frozen-lockfile --prefer-offline
+
+      - name: Build
+        working-directory: "./typescript"
+        run: yarn build # React ビルド
+
+      - name: Export
+        working-directory: "./typescript"
+        run: npx next export
+
+      - name: Deploy  # S3にデプロイ
+        working-directory: "./typescript"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        # S3のbucket-for-deploying-react-projectバケットにデプロイ
+        run: |
+          aws s3 cp --recursive --region ap-northeast-1 build s3://$AWS_S3_BUCKET
