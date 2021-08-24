@@ -6,11 +6,13 @@ on:
       - future
     paths:
       - typescript/**
+      - .github/workflows/typescript.yml
   pull_request:
     branches:
       - main
     paths:
       - typescript/**
+      - .github/workflows/typescript.yml
 
 jobs:
   format:
