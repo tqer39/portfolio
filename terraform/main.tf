@@ -79,7 +79,7 @@ resource "aws_s3_bucket_policy" "spa" {
         Resource = [
           "arn:aws:s3:::${aws_s3_bucket.spa.id}/*"
         ]
-      },
+      }
     ]
   })
 }
