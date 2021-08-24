@@ -66,16 +66,13 @@ resource "aws_s3_bucket_policy" "spa" {
   bucket = aws_s3_bucket.spa.id
   policy = jsonencode({
     Version = "2012-10-17"
-    Id      = "MYBUCKETPOLICY"
+    Id      = "spa"
     Statement = [
       {
-        Sid    = "spa"
-        Effect = "Allow"
-        Principal = {
-          type        = "AWS"
-          identifiers = ["582318560864"] // 東京リージョンはこの AWS Account ID を指定
-        }
-        Action = ["s3:GetObject"]
+        Sid       = "spa"
+        Effect    = "Allow"
+        Principal = "*"
+        Action    = ["s3:GetObject"]
         Resource = [
           "arn:aws:s3:::${aws_s3_bucket.spa.id}/*"
         ]
