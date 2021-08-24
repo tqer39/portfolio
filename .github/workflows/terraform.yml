@@ -28,22 +28,22 @@ jobs:
 
       - name: Terraform Format
         id: fmt
-        working-directory: './hcl'
+        working-directory: "./terraform"
         run: terraform fmt -recursive -check
 
       - name: Terraform Init
         id: init
-        working-directory: './hcl'
+        working-directory: "./terraform"
         run: terraform init
 
       - name: Terraform Validate
         id: validate
-        working-directory: './hcl'
+        working-directory: "./terraform"
         run: terraform validate -no-color
 
       - name: Terraform Plan
         id: plan
-        working-directory: './hcl'
+        working-directory: "./terraform"
         shell: bash
         # if: github.event_name == 'pull_request'
         if: github.event_name == 'push'
@@ -80,7 +80,7 @@ jobs:
         run: exit 1
 
       - name: Terraform Apply
-        working-directory: './hcl'
+        working-directory: "./terraform"
         # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         if: github.ref == 'refs/heads/future' && github.event_name == 'push'
         run: terraform apply -auto-approve
