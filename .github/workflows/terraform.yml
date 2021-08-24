@@ -28,10 +28,6 @@ jobs:
           terraform_version: "1.0.4" # Terraform Version
           cli_config_credentials_token: ${{ secrets.TF_PORTFOLIO_API_TOKEN }} # Terraform Cloud Token: TF_PORTFOLIO_API_TOKEN
 
-      # - name: Delete Lock File
-      #   id: remove
-      #   run: rm -rf .terraform.lock.hcl
-
       - name: Terraform Format
         id: fmt
         working-directory: "./terraform"
