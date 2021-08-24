@@ -41,7 +41,7 @@ resource "aws_s3_bucket" "spa" {
     enabled = false
   }
 
-  tags = merge(common_tags, {
+  tags = merge(locals.common_tags, {
     Name = "${var.prefix}"
   })
 }
