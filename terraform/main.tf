@@ -33,7 +33,6 @@ locals {
 }
 
 resource "aws_s3_bucket" "spa" {
-  provider      = aws.tb_pe
   bucket        = "spa-373303485727"
   force_destroy = true
 
