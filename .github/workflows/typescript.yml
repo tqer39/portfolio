@@ -78,4 +78,4 @@ jobs:
           AWS_DEFAULT_REGION: "ap-northeast-1"
         # S3のbucket-for-deploying-react-projectバケットにデプロイ
         run: |
-          aws s3 sync out/ s3://$AWS_S3_BUCKET
+          aws s3 sync out/ s3://$AWS_S3_BUCKET/
