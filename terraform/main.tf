@@ -75,7 +75,7 @@ resource "aws_iam_group_policy_attachment" "deploy" {
 }
 
 resource "aws_iam_group_policy_attachment" "terraform" {
-  group      = aws_iam_group.deploy.name
+  group      = aws_iam_group.terraform.name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
