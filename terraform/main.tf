@@ -43,8 +43,19 @@ resource "aws_iam_user" "deploy" {
   force_destroy = true
 }
 
+resource "aws_iam_user" "terraform" {
+  name          = "terraform"
+  path          = "/"
+  force_destroy = true
+}
+
 resource "aws_iam_access_key" "deploy" {
   user    = aws_iam_user.deploy.name
+  pgp_key = var.pgp_key
+}
+
+resource "aws_iam_access_key" "terraform" {
+  user    = aws_iam_user.terraform.name
   pgp_key = var.pgp_key
 }
 
@@ -53,9 +64,19 @@ resource "aws_iam_group" "deploy" {
   path = "/"
 }
 
+resource "aws_iam_group" "terraform" {
+  name = "terraform"
+  path = "/"
+}
+
 resource "aws_iam_group_policy_attachment" "deploy" {
   group      = aws_iam_group.deploy.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+
+resource "aws_iam_group_policy_attachment" "terraform" {
+  group      = aws_iam_group.deploy.name
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
 resource "aws_iam_group_membership" "deploy" {
@@ -64,6 +85,14 @@ resource "aws_iam_group_membership" "deploy" {
     aws_iam_user.deploy.name,
   ]
   group = aws_iam_group.deploy.name
+}
+
+resource "aws_iam_group_membership" "terraform" {
+  name = "terraform"
+  users = [
+    aws_iam_user.terraform.name,
+  ]
+  group = aws_iam_group.terraform.name
 }
 
 resource "aws_s3_bucket" "spa" {
