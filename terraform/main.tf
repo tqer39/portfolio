@@ -160,9 +160,13 @@ resource "aws_acm_certificate" "portfolio" {
   }
 }
 
-resource "aws_acm_certificate_validation" "portfolio" {
+resource "aws_acm_certificate_validation" "validation" {
   certificate_arn         = aws_acm_certificate.portfolio.arn
-  validation_record_fqdns = [for record in aws_route53_record.portfolio : record.fqdn]
+  validation_record_fqdns = [for record in aws_route53_record.validation : record.fqdn]
+
+  depends_on = [
+    aws_route53_record.validation
+  ]
 }
 
 resource "aws_route53_zone" "portfolio" {
@@ -170,7 +174,7 @@ resource "aws_route53_zone" "portfolio" {
   force_destroy = true
 }
 
-resource "aws_route53_record" "portfolio" {
+resource "aws_route53_record" "validation" {
   for_each = {
     for dvo in aws_acm_certificate.portfolio.domain_validation_options : dvo.domain_name => {
       name   = dvo.resource_record_name
@@ -187,93 +191,105 @@ resource "aws_route53_record" "portfolio" {
   zone_id         = aws_route53_zone.portfolio.id
 }
 
-# resource "aws_s3_bucket" "cloudfront_log" {
-#   bucket        = "cloudfront-log-373303485727"
-#   acl           = "private"
-#   force_destroy = true
+resource "aws_route53_record" "portfolio_A" {
+  zone_id = aws_route53_zone.portfolio.id
+  name    = var.domains["portfolio"]
+  type    = "A"
 
-#   tags = merge({
-#     Name = "cloudfront_log"
-#   })
+  alias {
+    name                   = aws_cloudfront_distribution.portfolio.domain_name
+    zone_id                = aws_cloudfront_distribution.portfolio.hosted_zone_id
+    evaluate_target_health = false
+  }
+}
 
-#   lifecycle_rule {
-#     enabled = true
-#     expiration {
-#       days = "30"
-#     }
-#   }
-# }
+resource "aws_s3_bucket" "cloudfront_log" {
+  bucket        = "cloudfront-log-373303485727"
+  acl           = "private"
+  force_destroy = true
 
-# resource "aws_cloudfront_distribution" "portfolio" {
-#   origin {
-#     custom_origin_config {
-#       http_port              = 80
-#       https_port             = 443
-#       origin_protocol_policy = "https-only"
-#       origin_ssl_protocols   = ["TLSv1.2"]
-#     }
+  tags = merge({
+    Name = "cloudfront_log"
+  })
 
-#     domain_name = var.domains["portfolio"]
-#     origin_id   = "Custom-${var.domains["portfolio"]}"
+  lifecycle_rule {
+    enabled = true
+    expiration {
+      days = "30"
+    }
+  }
+}
 
-#     custom_header {
-#       name  = "x-pre-shared-key"
-#       value = ""
-#     }
-#   }
+resource "aws_cloudfront_distribution" "portfolio" {
+  origin {
+    custom_origin_config {
+      http_port              = 80
+      https_port             = 443
+      origin_protocol_policy = "https-only"
+      origin_ssl_protocols   = ["TLSv1.2"]
+    }
 
-#   viewer_certificate {
-#     cloudfront_default_certificate = false
-#     acm_certificate_arn            = aws_acm_certificate.portfolio.arn
-#     minimum_protocol_version       = "TLSv1.2_2019"
-#     ssl_support_method             = "sni-only"
-#   }
+    domain_name = var.domains["portfolio"]
+    origin_id   = "Custom-${var.domains["portfolio"]}"
 
-#   // CNAME
-#   aliases = [
-#     aws_acm_certificate.portfolio.domain_name
-#   ]
+    custom_header {
+      name  = "x-pre-shared-key"
+      value = ""
+    }
+  }
 
-#   enabled         = true
-#   is_ipv6_enabled = false
-#   http_version    = "http2"
+  viewer_certificate {
+    cloudfront_default_certificate = false
+    acm_certificate_arn            = aws_acm_certificate.portfolio.arn
+    minimum_protocol_version       = "TLSv1.2_2019"
+    ssl_support_method             = "sni-only"
+  }
 
-#   default_cache_behavior {
-#     viewer_protocol_policy = "redirect-to-https"
-#     allowed_methods        = ["GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT", "DELETE"]
-#     cached_methods         = ["GET", "HEAD"]
-#     compress               = true
-#     default_ttl            = 86400
-#     max_ttl                = 31536000
-#     min_ttl                = 0
-#     smooth_streaming       = false
-#     target_origin_id       = "Custom-${var.domains["portfolio"]}"
+  // CNAME
+  aliases = [
+    aws_acm_certificate.portfolio.domain_name
+  ]
 
-#     forwarded_values {
-#       headers = [
-#         "*"
-#       ]
-#       cookies {
-#         forward = "all"
-#       }
-#       query_string = true
-#     }
-#   }
+  enabled         = true
+  is_ipv6_enabled = false
+  http_version    = "http2"
 
-#   logging_config {
-#     include_cookies = false
-#     bucket          = "${aws_s3_bucket.cloudfront_log.bucket}.s3.amazonaws.com"
-#     prefix          = "log"
-#   }
+  default_cache_behavior {
+    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods        = ["GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT", "DELETE"]
+    cached_methods         = ["GET", "HEAD"]
+    compress               = true
+    default_ttl            = 86400
+    max_ttl                = 31536000
+    min_ttl                = 0
+    smooth_streaming       = false
+    target_origin_id       = "Custom-${var.domains["portfolio"]}"
 
-#   price_class      = "PriceClass_All"
-#   retain_on_delete = false
+    forwarded_values {
+      headers = [
+        "*"
+      ]
+      cookies {
+        forward = "all"
+      }
+      query_string = true
+    }
+  }
 
-#   restrictions {
-#     // GEO ロケーションでアクセス制御
-#     geo_restriction {
-#       restriction_type = "whitelist"
-#       locations        = ["JP"]
-#     }
-#   }
-# }
+  logging_config {
+    include_cookies = false
+    bucket          = "${aws_s3_bucket.cloudfront_log.bucket}.s3.amazonaws.com"
+    prefix          = "log"
+  }
+
+  price_class      = "PriceClass_All"
+  retain_on_delete = false
+
+  restrictions {
+    // GEO ロケーションでアクセス制御
+    geo_restriction {
+      restriction_type = "whitelist"
+      locations        = ["JP"]
+    }
+  }
+}
