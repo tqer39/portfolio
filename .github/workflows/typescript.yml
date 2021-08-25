@@ -65,9 +65,9 @@ jobs:
         working-directory: "./typescript"
         run: yarn build # React ビルド
 
-      # - name: Export
-      #   working-directory: "./typescript"
-      #   run: npx next export
+      - name: Export
+        working-directory: "./typescript"
+        run: yarn export
 
       - name: Deploy # S3にデプロイ
         working-directory: "./typescript"
@@ -77,4 +77,4 @@ jobs:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
         # S3のbucket-for-deploying-react-projectバケットにデプロイ
         run: |
-          aws s3 cp --recursive --region ap-northeast-1 build s3://$AWS_S3_BUCKET
+          aws s3 sync out/ s3://$AWS_S3_BUCKET
