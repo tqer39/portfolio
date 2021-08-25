@@ -160,13 +160,10 @@ resource "aws_acm_certificate" "portfolio" {
   }
 }
 
-# resource "aws_acm_certificate_validation" "portfolio_cname" {
-#   certificate_arn = aws_acm_certificate.portfolio.arn
-#   # validation_record_fqdns = [
-#   #   aws_route53_record.portfolio_cname.fqdn
-#   # ]
-#   validation_record_fqdns = [for record in aws_route53_record.portfolio_cname : record.fqdn]
-# }
+resource "aws_acm_certificate_validation" "portfolio" {
+  certificate_arn         = aws_acm_certificate.portfolio.arn
+  validation_record_fqdns = [for record in aws_route53_record.portfolio : record.fqdn]
+}
 
 resource "aws_route53_zone" "portfolio" {
   name          = var.domains["root"]
