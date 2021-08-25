@@ -117,7 +117,7 @@ resource "aws_s3_bucket_policy" "spa" {
 }
 
 resource "aws_acm_certificate" "portfolio" {
-  provider                  = var.virginia
+  provider                  = aws.virginia
   domain_name               = "${var.domains["portfolio"]}."
   subject_alternative_names = ["*.${var.domains["portfolio"]}"]
   validation_method         = "DNS"
