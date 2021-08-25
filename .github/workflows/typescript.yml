@@ -1,0 +1,81 @@
+name: "TypeScript"
+
+on:
+  push:
+    branches:
+      - future
+    paths:
+      - typescript/**
+      - .github/workflows/typescript.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - typescript/**
+      - .github/workflows/typescript.yml
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "14.x"
+
+      - name: Setup cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/yarn
+          key: ${{ runner.os }}-yarn-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
+          restore-keys: ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        id: install_dependencies
+        working-directory: "./typescript"
+        run: yarn install --frozen-lockfile --prefer-offline
+
+      - name: Check diff
+        id: check_diff
+        working-directory: "./typescript"
+        run: git diff --exit-code
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14.x
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/yarn
+          key: ${{ runner.os }}-yarn-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
+          restore-keys: ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        id: install_dependencies
+        working-directory: "./typescript"
+        run: yarn install --frozen-lockfile --prefer-offline
+
+      - name: Build
+        working-directory: "./typescript"
+        run: yarn build # React ビルド
+
+      - name: Export
+        working-directory: "./typescript"
+        run: yarn export
+
+      - name: Deploy # S3にデプロイ
+        working-directory: "./typescript"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_DEFAULT_REGION: "ap-northeast-1"
+        # S3のbucket-for-deploying-react-projectバケットにデプロイ
+        run: |
+          aws s3 sync out/ s3://$AWS_S3_BUCKET/
