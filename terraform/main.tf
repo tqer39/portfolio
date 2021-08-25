@@ -145,20 +145,20 @@ resource "aws_s3_bucket_policy" "spa" {
   })
 }
 
-# resource "aws_acm_certificate" "portfolio" {
-#   provider                  = aws.virginia
-#   domain_name               = "${var.domains["portfolio"]}."
-#   subject_alternative_names = ["*.${var.domains["portfolio"]}"]
-#   validation_method         = "DNS"
+resource "aws_acm_certificate" "portfolio" {
+  provider                  = aws.virginia
+  domain_name               = "${var.domains["portfolio"]}."
+  subject_alternative_names = ["*.${var.domains["portfolio"]}"]
+  validation_method         = "DNS"
 
-#   tags = merge(local.common_tags, {
-#     Name = "${var.prefix}"
-#   })
+  tags = merge(local.common_tags, {
+    Name = "${var.prefix}"
+  })
 
-#   lifecycle {
-#     create_before_destroy = true
-#   }
-# }
+  lifecycle {
+    create_before_destroy = true
+  }
+}
 
 # resource "aws_acm_certificate_validation" "portfolio_cname" {
 #   certificate_arn = aws_acm_certificate.portfolio.arn
