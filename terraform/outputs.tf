@@ -10,6 +10,6 @@ output "iam_user_terraform_access_key" {
 output "iam_user_terraform_encrypted_secret" {
   value = aws_iam_access_key.terraform.encrypted_secret
 }
-output route53_zone_portfolio_name_servers {
+output "route53_zone_portfolio_name_servers" {
   value = aws_route53_zone.portfolio.name_servers
 }
