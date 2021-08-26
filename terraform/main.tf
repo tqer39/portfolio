@@ -102,6 +102,9 @@ resource "aws_s3_bucket" "spa" {
 
   lifecycle_rule {
     enabled = false
+    expiration {
+      expired_object_delete_marker = false
+    }
   }
 
   website {
@@ -179,11 +182,11 @@ resource "aws_acm_certificate_validation" "portfolio" {
 resource "aws_route53_zone" "portfolio" {
   name          = var.domains["root"]
   force_destroy = true
-}
 
   tags = merge(local.common_tags, {
     Name = "${var.prefix}"
   })
+}
 
 resource "aws_route53_record" "portfolio" {
   for_each = {
