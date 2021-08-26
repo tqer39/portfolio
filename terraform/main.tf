@@ -166,12 +166,12 @@ resource "aws_acm_certificate" "portfolio" {
   }
 }
 
-resource "aws_acm_certificate_validation" "validation" {
+resource "aws_acm_certificate_validation" "portfolio" {
   certificate_arn         = aws_acm_certificate.portfolio.arn
-  validation_record_fqdns = [for record in aws_route53_record.validation : record.fqdn]
+  validation_record_fqdns = [for record in aws_route53_record.portfolio : record.fqdn]
 
   depends_on = [
-    aws_route53_record.validation
+    aws_route53_record.portfolio
   ]
 }
 
@@ -180,7 +180,7 @@ resource "aws_route53_zone" "portfolio" {
   force_destroy = true
 }
 
-resource "aws_route53_record" "validation" {
+resource "aws_route53_record" "portfolio" {
   for_each = {
     for dvo in aws_acm_certificate.portfolio.domain_validation_options : dvo.domain_name => {
       name   = dvo.resource_record_name
