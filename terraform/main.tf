@@ -167,6 +167,7 @@ resource "aws_acm_certificate" "portfolio" {
 }
 
 resource "aws_acm_certificate_validation" "portfolio" {
+  provider                = aws.virginia
   certificate_arn         = aws_acm_certificate.portfolio.arn
   validation_record_fqdns = [for record in aws_route53_record.portfolio : record.fqdn]
 
@@ -225,7 +226,8 @@ resource "aws_s3_bucket" "cloudfront_log" {
   lifecycle_rule {
     enabled = true
     expiration {
-      days = "30"
+      days                         = "30"
+      expired_object_delete_marker = false
     }
   }
 
