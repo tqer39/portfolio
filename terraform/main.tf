@@ -123,6 +123,12 @@ EOF
   tags = merge(local.common_tags, {
     Name = "${var.prefix}"
   })
+
+  # lifecycle {
+  #   ignore_changes = [
+  #     lifecycle_rule
+  #   ]
+  # }
 }
 
 # see: https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/HostingWebsiteOnS3Setup.html#step3-add-bucket-policy-make-content-public
@@ -218,6 +224,12 @@ resource "aws_s3_bucket" "cloudfront_log" {
       days = "30"
     }
   }
+
+  # lifecycle {
+  #   ignore_changes = [
+  #     lifecycle_rule
+  #   ]
+  # }
 }
 
 resource "aws_cloudfront_distribution" "portfolio" {
