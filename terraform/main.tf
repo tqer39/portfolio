@@ -167,7 +167,6 @@ resource "aws_acm_certificate" "portfolio" {
 }
 
 resource "aws_acm_certificate_validation" "portfolio" {
-  provider                = aws.virginia
   certificate_arn         = aws_acm_certificate.portfolio.arn
   validation_record_fqdns = [for record in aws_route53_record.portfolio : record.fqdn]
 
@@ -180,6 +179,10 @@ resource "aws_route53_zone" "portfolio" {
   name          = var.domains["root"]
   force_destroy = true
 }
+
+  tags = merge(local.common_tags, {
+    Name = "${var.prefix}"
+  })
 
 resource "aws_route53_record" "portfolio" {
   for_each = {
