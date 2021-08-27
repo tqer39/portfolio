@@ -97,7 +97,7 @@ resource "aws_iam_group_membership" "terraform" {
 
 resource "aws_s3_bucket" "spa" {
   bucket        = "spa-373303485727"
-  acl           = "public-read" # see: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket#static-website-hosting
+  acl           = "private" # see: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket#static-website-hosting
   force_destroy = true
 
   lifecycle_rule {
@@ -122,6 +122,9 @@ resource "aws_s3_bucket" "spa" {
 }]
 EOF
   }
+  versioning {
+    enabled = true
+  }
 
   tags = merge(local.common_tags, {
     Name = "spa-373303485727"
@@ -136,12 +139,14 @@ resource "aws_s3_bucket_policy" "spa" {
     Id      = "spa"
     Statement = [
       {
-        Sid       = "spa"
-        Effect    = "Allow"
-        Principal = "*"
-        Action    = ["s3:GetObject"]
+        Sid    = "spa"
+        Effect = "Allow"
+        Principal = {
+          "AWS" = ["${aws_cloudfront_origin_access_identity.portfolio.iam_arn}"]
+        }
+        Action = ["s3:GetObject"]
         Resource = [
-          "arn:aws:s3:::${aws_s3_bucket.spa.id}/*"
+          "${aws_s3_bucket.spa.arn}/*"
         ]
       }
     ]
@@ -217,17 +222,33 @@ resource "aws_s3_bucket" "cloudfront_log" {
   acl           = "private"
   force_destroy = true
 
+  lifecycle_rule {
+    id      = "廃棄"
+    enabled = true
+
+    transition {
+      days          = 30
+      storage_class = "STANDARD_IA"
+    }
+
+    transition {
+      days          = 60
+      storage_class = "GLACIER"
+    }
+
+    expiration {
+      days                         = 90
+      expired_object_delete_marker = true
+    }
+  }
+
+  versioning {
+    enabled = true
+  }
+
   tags = merge({
     Name = "cloudfront_log"
   })
-
-  lifecycle_rule {
-    enabled = true
-    expiration {
-      days                         = "30"
-      expired_object_delete_marker = false
-    }
-  }
 }
 
 resource "aws_cloudfront_origin_access_identity" "portfolio" {
@@ -297,3 +318,51 @@ resource "aws_cloudfront_distribution" "portfolio" {
     }
   }
 }
+
+resource "aws_iam_user" "function" {
+  name          = "function"
+  path          = "/"
+  force_destroy = true
+}
+
+resource "aws_iam_group" "function" {
+  name = "function"
+  path = "/"
+}
+
+resource "aws_iam_group_policy_attachment" "function_AWSLambdaBasicExecutionRole" {
+  group      = aws_iam_group.function.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+resource "aws_iam_group_policy_attachment" "function_AWSXRayDaemonWriteAccess" {
+  group      = aws_iam_group.function.name
+  policy_arn = "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"
+}
+
+resource "aws_iam_group_membership" "function" {
+  name = "function"
+  users = [
+    aws_iam_user.function.name,
+  ]
+  group = aws_iam_group.function.name
+}
+
+# resource "aws_api_gateway_rest_api" "portfolio" {
+#   name        = "portfolio"
+#   description = "example serverless api"
+#   policy = jsonencode(statement {
+#     effect = "Allow"
+#     principals = {
+#       type = "*"
+#       identifiers = [
+#       "*"]
+#     }
+#     actions = [
+#       "execute-api:Invoke"
+#     ]
+#     resources = [
+#       "arn:aws:execute-api:ap-northeast-1:*:*/*/*"
+#     ]
+#   })
+# }
