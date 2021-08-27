@@ -126,12 +126,6 @@ EOF
   tags = merge(local.common_tags, {
     Name = "${var.prefix}"
   })
-
-  # lifecycle {
-  #   ignore_changes = [
-  #     lifecycle_rule
-  #   ]
-  # }
 }
 
 # see: https://docs.aws.amazon.com/ja_jp/AmazonS3/latest/userguide/HostingWebsiteOnS3Setup.html#step3-add-bucket-policy-make-content-public
@@ -234,31 +228,27 @@ resource "aws_s3_bucket" "cloudfront_log" {
       expired_object_delete_marker = false
     }
   }
+}
 
-  # lifecycle {
-  #   ignore_changes = [
-  #     lifecycle_rule
-  #   ]
-  # }
+resource "aws_cloudfront_origin_access_identity" "portfolio" {
+  comment = "This is the cloudfront origin access identity for the portfolio."
 }
 
 resource "aws_cloudfront_distribution" "portfolio" {
   origin {
-    custom_origin_config {
-      http_port              = 80
-      https_port             = 443
-      origin_protocol_policy = "https-only"
-      origin_ssl_protocols   = ["TLSv1.2"]
-    }
+    domain_name = aws_s3_bucket.spa.bucket_regional_domain_name
+    origin_id   = var.prefix
 
-    domain_name = var.domains["portfolio"]
-    origin_id   = "Custom-${var.domains["portfolio"]}"
-
-    custom_header {
-      name  = "x-pre-shared-key"
-      value = ""
+    s3_origin_config {
+      origin_access_identity = aws_cloudfront_origin_access_identity.portfolio.cloudfront_access_identity_path
     }
   }
+
+  enabled          = true
+  http_version     = "http2"
+  is_ipv6_enabled  = false
+  price_class      = "PriceClass_All"
+  retain_on_delete = false
 
   viewer_certificate {
     cloudfront_default_certificate = false
@@ -272,30 +262,25 @@ resource "aws_cloudfront_distribution" "portfolio" {
     aws_acm_certificate.portfolio.domain_name
   ]
 
-  enabled         = true
-  is_ipv6_enabled = false
-  http_version    = "http2"
-
   default_cache_behavior {
-    viewer_protocol_policy = "redirect-to-https"
-    allowed_methods        = ["GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT", "DELETE"]
-    cached_methods         = ["GET", "HEAD"]
-    compress               = true
-    default_ttl            = 86400
-    max_ttl                = 31536000
-    min_ttl                = 0
-    smooth_streaming       = false
-    target_origin_id       = "Custom-${var.domains["portfolio"]}"
+    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
+    cached_methods   = ["GET", "HEAD", "OPTIONS"]
+    target_origin_id = var.prefix
 
     forwarded_values {
-      headers = [
-        "*"
-      ]
+      query_string = false
+      headers      = []
+
       cookies {
-        forward = "all"
+        forward = "none"
       }
-      query_string = true
     }
+
+    min_ttl                = 0
+    default_ttl            = 86400
+    max_ttl                = 31536000
+    compress               = true
+    viewer_protocol_policy = "redirect-to-https"
   }
 
   logging_config {
@@ -303,9 +288,6 @@ resource "aws_cloudfront_distribution" "portfolio" {
     bucket          = "${aws_s3_bucket.cloudfront_log.bucket}.s3.amazonaws.com"
     prefix          = "log"
   }
-
-  price_class      = "PriceClass_All"
-  retain_on_delete = false
 
   restrictions {
     // GEO ロケーションでアクセス制御
