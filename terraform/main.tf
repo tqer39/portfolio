@@ -124,7 +124,7 @@ EOF
   }
 
   tags = merge(local.common_tags, {
-    Name = "${var.prefix}"
+    Name = "spa-373303485727"
   })
 }
 
