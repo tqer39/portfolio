@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import { Avatar, Heading } from "@chakra-ui/react";
 import { useColorMode } from "@chakra-ui/color-mode";
 import { IconButton } from "@chakra-ui/button";
-import { FaSun, FaMoon } from "react-icons/fa";
+import { FaSun, FaMoon, FaGithub } from "react-icons/fa";
 import gravatarUrl from "gravatar-url";
 
 const Header: NextPage = (props) => {
@@ -18,6 +18,12 @@ const Header: NextPage = (props) => {
         size={"md"}
         src={gravatarUrl("tqer39@gmail.com", { size: 100 })}
       />
+      <IconButton
+        ml={2}
+        aria-label=""
+        icon={<FaGithub />}
+        isRound={true}
+      ></IconButton>
       <IconButton
         ml={8}
         aria-label=""
