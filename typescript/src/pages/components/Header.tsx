@@ -1,13 +1,15 @@
 // import React from "react";
 import type { NextPage } from "next";
+import { Avatar } from "@chakra-ui/react";
+import gravatarUrl from "gravatar-url";
 
 const Header: NextPage = (props) => {
   return (
     <>
-      <header>
-        <span>logo</span>
-        <span>tqer39</span>navigation
-      </header>
+      <Avatar
+        size={"md"}
+        src={gravatarUrl("tqer39@gmail.com", { size: 100 })}
+      />
     </>
   );
 };
