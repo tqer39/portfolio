@@ -1,11 +1,11 @@
 import type { NextPage } from "next";
 import { ChakraProvider } from "@chakra-ui/react";
-import Header from "./components/Header";
+import Navbar from "./components/Navbar";
 
 const Home: NextPage = () => {
   return (
     <ChakraProvider>
-      <Header />
+      <Navbar />
       <h1>About</h1>
       Profile Image.
       <hr />
