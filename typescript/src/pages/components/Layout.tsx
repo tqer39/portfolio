@@ -5,7 +5,7 @@ import Navbar from "./Navbar";
 
 const Layout: NextPage = () => {
   return (
-    <VStack>
+    <VStack p={5}>
       <Flex w="100%">
         <Navbar />
         <h1>About</h1>
