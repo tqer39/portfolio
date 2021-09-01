@@ -1,9 +1,10 @@
 import type { NextPage } from "next";
+import { VStack } from "@chakra-ui/layout";
 import Navbar from "./Navbar";
 
 const Layout: NextPage = () => {
   return (
-    <>
+    <VStack>
       <Navbar />
       <h1>About</h1>
       Profile Image.
@@ -12,7 +13,7 @@ const Layout: NextPage = () => {
       <hr />
       <h1>Profile</h1>
       <footer>copyright</footer>
-    </>
+    </VStack>
   );
 };
 
